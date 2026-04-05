@@ -1,0 +1,10 @@
+repo,phase,purpose,owner_objects
+homebrew-sourceos,phase1,Homebrew tap for host bootstrap distribution,Formula/Cask distribution only
+sourceos-boot,phase1,Boot and recovery artifacts,BootReleaseSet.v1
+sourceos-control-plane,phase1,Website/UI/API control plane,ExperienceProfile.v1;ReleaseSet.v1;Fingerprint.v1 (consumer);ControlPlaneObjectModel.v0
+sourceos-nix-lifecycle,phase1,Git-backed lifecycle and ReleaseSet assembly,ReleaseSet.v1;ConfigSource.v0;TokenDoor.v0
+sourceos-policy-ledger,phase1,Policy and audit surfaces,Fingerprint.v1;PolicyBundle.v0
+sourceos-profile-catalog,phase1,Experience profile catalog,ExperienceProfile.v1
+sourceos-sdk,phase1,Client SDKs and bootstrap CLI source home,CLI surface docs
+sourceos-workspace,phase1,"Workspace, pinning, import helpers",-
+prophet-cli-existing,phase1-patch,Existing ProphetCLI/ProfitCLI repo patched as façade wrapper and interactive shell surface,wrapper commands only; no bootstrap business logic
