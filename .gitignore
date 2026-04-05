@@ -1,0 +1,7 @@
+/bin/
+/dist/
+/.cache/
+*.log
+*.out
+.DS_Store
+coverage.out
