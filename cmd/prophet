@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "usage: prophet <bootstrap|ask|plan|agent|mcp> ..." >&2
+  exit 2
+fi
+
+case "$1" in
+  bootstrap)
+    shift
+    exec sourceos-bootstrap "$@"
+    ;;
+  ask)
+    echo "TODO: ask overlay wrapper (read-mostly)"
+    ;;
+  plan)
+    echo "TODO: plan overlay wrapper (read-mostly)"
+    ;;
+  agent)
+    shift
+    if [[ "${1:-}" == "run" ]]; then
+      echo "TODO: agent run wrapper (approval-gated deterministic tools)"
+    else
+      echo "usage: prophet agent run ..." >&2
+      exit 2
+    fi
+    ;;
+  mcp)
+    shift
+    case "${1:-}" in
+      serve) echo "TODO: mcp serve wrapper" ;;
+      doctor) echo "TODO: mcp doctor wrapper" ;;
+      *) echo "usage: prophet mcp <serve|doctor>" >&2; exit 2 ;;
+    esac
+    ;;
+  *)
+    echo "unknown command: $1" >&2
+    exit 2
+    ;;
+esac

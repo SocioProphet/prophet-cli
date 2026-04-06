@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"ConfigSource.v0","type":"object","required":["apiVersion","kind","source"],"properties":{"apiVersion":{"const":"v0"},"kind":{"const":"ConfigSource"},"source":{"type":"object"}},"additionalProperties":true}

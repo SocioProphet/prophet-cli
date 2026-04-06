@@ -1,0 +1,16 @@
+[workspace]
+name = "sourceos-phase1"
+revision = "2.1"
+
+[repos]
+members = [
+  "sourceos-workspace",
+  "sourceos-control-plane",
+  "sourceos-profile-catalog",
+  "sourceos-nix-lifecycle",
+  "sourceos-policy-ledger",
+  "sourceos-sdk",
+  "sourceos-boot",
+  "homebrew-sourceos",
+  "prophet-cli-existing"
+]

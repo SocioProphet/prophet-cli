@@ -1,0 +1,9 @@
+name: validate-schemas
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m json.tool examples/policy-bundle.example.v0.json >/dev/null
+      - run: python -m json.tool examples/policy-bundle.standard-local.v0.json >/dev/null

@@ -1,0 +1,8 @@
+name: validate-schemas
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m json.tool examples/boot-release-set.example.v1.json >/dev/null
