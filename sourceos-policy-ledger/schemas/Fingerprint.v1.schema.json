@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"Fingerprint.v1","type":"object","required":["apiVersion","kind","hash"],"properties":{"apiVersion":{"const":"v1"},"kind":{"const":"Fingerprint"},"hash":{"type":"string"}},"additionalProperties":true}

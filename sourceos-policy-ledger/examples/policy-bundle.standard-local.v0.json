@@ -1,0 +1,1 @@
+{"apiVersion":"v0","kind":"PolicyBundle","rules":[{"id":"local-standard","mode":"enforce"}]}

@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"PolicyBundle.v0","type":"object","required":["apiVersion","kind","rules"],"properties":{"apiVersion":{"const":"v0"},"kind":{"const":"PolicyBundle"},"rules":{"type":"array"}},"additionalProperties":true}

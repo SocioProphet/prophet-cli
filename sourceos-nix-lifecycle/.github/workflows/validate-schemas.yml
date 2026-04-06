@@ -1,0 +1,10 @@
+name: validate-schemas
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m json.tool examples/release-set.example.v1.json >/dev/null
+      - run: python -m json.tool examples/config-source.example.v0.json >/dev/null
+      - run: python -m json.tool examples/token-door.example.v0.json >/dev/null

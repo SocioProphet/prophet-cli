@@ -1,0 +1,24 @@
+{
+  "workspace": "sourceos-phase1",
+  "revision": "2.1",
+  "repos": [
+    "sourceos-workspace",
+    "sourceos-control-plane",
+    "sourceos-profile-catalog",
+    "sourceos-nix-lifecycle",
+    "sourceos-policy-ledger",
+    "sourceos-sdk",
+    "sourceos-boot",
+    "homebrew-sourceos",
+    "prophet-cli-existing"
+  ],
+  "frozen_objects": [
+    "ExperienceProfile.v1",
+    "ReleaseSet.v1",
+    "BootReleaseSet.v1",
+    "Fingerprint.v1",
+    "ConfigSource.v0",
+    "TokenDoor.v0",
+    "PolicyBundle.v0"
+  ]
+}

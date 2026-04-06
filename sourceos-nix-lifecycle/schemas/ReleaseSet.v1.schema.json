@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"ReleaseSet.v1","type":"object","required":["apiVersion","kind","metadata"],"properties":{"apiVersion":{"const":"v1"},"kind":{"const":"ReleaseSet"},"metadata":{"type":"object"}},"additionalProperties":true}

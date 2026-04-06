@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"TokenDoor.v0","type":"object","required":["apiVersion","kind","mode"],"properties":{"apiVersion":{"const":"v0"},"kind":{"const":"TokenDoor"},"mode":{"type":"string","const":"read-only"}},"additionalProperties":true}
