@@ -5,6 +5,9 @@ on:
     branches: [ main, sourceos/rev2-1-facade-seed, scaffold3 ]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   go:
     runs-on: ubuntu-latest
