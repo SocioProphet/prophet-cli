@@ -3,7 +3,7 @@ package cmd
 import "github.com/spf13/cobra"
 
 func newBootstrapCmd() *cobra.Command {
-	cmd := &cobra.Command{Use: "bootstrap", Short: "Bootstrap facade commands"}
+	cmd := &cobra.Command{Use: "bootstrap", Short: "Bootstrap façade commands"}
 	cmd.AddCommand(
 		newBootstrapLeaf("doctor", "diagnose host prerequisites"),
 		newBootstrapLeaf("login", "prepare authenticated bootstrap session"),
