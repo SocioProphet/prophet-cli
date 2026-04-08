@@ -3,5 +3,5 @@
 /.cache/
 *.log
 *.out
-.DS_Store
 coverage.out
+.DS_Store
