@@ -28,7 +28,7 @@ func Execute() {
 }
 
 func NewRootCommand() *cobra.Command {
-	root := &cobra.Command{Use: "prophet", Short: "Prophet facade CLI", SilenceUsage: true}
+	root := &cobra.Command{Use: "prophet", Short: "Prophet façade CLI", SilenceUsage: true}
 	root.PersistentFlags().StringVar(&flags.Profile, "profile", "", "named profile")
 	root.PersistentFlags().StringVar(&flags.Space, "space", "", "execution space")
 	root.PersistentFlags().StringVarP(&flags.Output, "output", "o", "text", "output format")
@@ -38,11 +38,12 @@ func NewRootCommand() *cobra.Command {
 	root.PersistentFlags().BoolVar(&flags.NoPager, "no-pager", false, "disable pager")
 	root.AddCommand(
 		newBootstrapCmd(),
+		newVocabCmd(),
 		newA2ACmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
 		newPlaceholderCmd("plan", "Agent assist: generate a plan over deterministic tools"),
-		newPlaceholderCmd("agent", "Agent execute facade"),
-		newPlaceholderCmd("mcp", "MCP boundary facade"),
+		newPlaceholderCmd("agent", "Agent execute façade (approval-gated scaffold)"),
+		newPlaceholderCmd("mcp", "MCP boundary façade"),
 	)
 	return root
 }
