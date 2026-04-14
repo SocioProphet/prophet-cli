@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [ main, sourceos/rev2-1-facade-seed, scaffold3 ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Download modules
+        run: go mod tidy
+      - name: Test
+        run: go test ./...
+      - name: Vet
+        run: go vet ./...
