@@ -1,19 +1,17 @@
 package vocab
 
-import (
-	"context"
-	"testing"
-)
+import "testing"
 
-func TestValidateReportsValidatorPath(t *testing.T) {
-	resp, err := Validate(context.Background(), []string{"graphs/demo.ttl"})
-	if err != nil {
-		t.Fatalf("Validate returned error: %v", err)
+func TestResolveRepoPathPrefersEnv(t *testing.T) {
+	t.Setenv("PROPHET_VOCAB_REPO", "/tmp/ontogenesis")
+	if got := resolveRepoPath(); got != "/tmp/ontogenesis" {
+		t.Fatalf("unexpected repo path: %s", got)
 	}
-	if got := resp["validator"]; got != "policy/tools/validate_all.py" {
-		t.Fatalf("unexpected validator path: %v", got)
-	}
-	if got := resp["operation"]; got != "validate" {
-		t.Fatalf("unexpected operation: %v", got)
+}
+
+func TestNormalizeGraphPathsDefaultsToDot(t *testing.T) {
+	got := normalizeGraphPaths(nil)
+	if len(got) != 1 || got[0] != "." {
+		t.Fatalf("unexpected default graph paths: %#v", got)
 	}
 }
