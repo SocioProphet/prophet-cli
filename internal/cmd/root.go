@@ -38,6 +38,7 @@ func NewRootCommand() *cobra.Command {
 	root.PersistentFlags().BoolVar(&flags.NoPager, "no-pager", false, "disable pager")
 	root.AddCommand(
 		newBootstrapCmd(),
+		newVocabCmd(),
 		newA2ACmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
 		newPlaceholderCmd("plan", "Agent assist: generate a plan over deterministic tools"),
