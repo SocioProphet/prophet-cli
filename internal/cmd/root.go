@@ -39,6 +39,7 @@ func NewRootCommand() *cobra.Command {
 	root.AddCommand(
 		newBootstrapCmd(),
 		newVocabCmd(),
+		newControlNodeCmd(),
 		newA2ACmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
 		newPlaceholderCmd("plan", "Agent assist: generate a plan over deterministic tools"),
