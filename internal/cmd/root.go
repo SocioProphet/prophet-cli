@@ -40,6 +40,7 @@ func NewRootCommand() *cobra.Command {
 		newBootstrapCmd(),
 		newVocabCmd(),
 		newBindingsCmd(),
+		newK8sCmd(),
 		newControlNodeCmd(),
 		newA2ACmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
