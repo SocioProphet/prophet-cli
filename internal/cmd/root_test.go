@@ -8,6 +8,7 @@ func TestRootCommandHasExpectedTopLevelCommands(t *testing.T) {
 		"bootstrap":    false,
 		"vocab":        false,
 		"bindings":     false,
+		"k8s":          false,
 		"control-node": false,
 		"a2a":          false,
 		"ask":          false,
