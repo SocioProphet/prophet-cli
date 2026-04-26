@@ -107,3 +107,42 @@ jobs:
             fixtures/semantic-core/k8s/valid-deployment-service-ingress.yaml \
             fixtures/semantic-core/k8s/valid-k3s-ingress.yaml \
             fixtures/semantic-core/k8s/valid-kubeedge-deployment.yaml
+
+  k8s-policy-rejection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout prophet-cli
+        uses: actions/checkout@v4
+      - name: Checkout standards repo
+        uses: actions/checkout@v4
+        with:
+          repository: SocioProphet/socioprophet-standards-knowledge
+          ref: main
+          path: socioprophet-standards-knowledge
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install K8s shapecheck dependencies
+        run: python -m pip install --upgrade pip pyyaml rdflib pyshacl
+      - name: Verify nonconforming K8s samples are rejected
+        env:
+          PROPHET_STANDARDS_REPO: ./socioprophet-standards-knowledge
+        run: |
+          go mod tidy
+          for fixture in \
+            fixtures/semantic-core/k8s/*selector-mismatch.yaml \
+            fixtures/semantic-core/k8s/*tls-host-mismatch.yaml \
+            fixtures/semantic-core/k8s/*missing-edge-selector.yaml
+          do
+            set +e
+            go run ./cmd/prophet k8s shapecheck "$fixture"
+            code=$?
+            set -e
+            if [ "$code" -eq 0 ]; then
+              echo "shapecheck accepted a nonconforming sample: $fixture" >&2
+              exit 1
+            fi
+          done
