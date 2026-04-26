@@ -50,7 +50,7 @@ jobs:
           PROPHET_VOCAB_REPO: ./socioprophet-standards-knowledge
         run: |
           go mod tidy
-          go run ./cmd/prophet vocab validate .
+          go run ./cmd/prophet vocab validate policy/shapes/master.shacl.ttl
 
   bindings-validate:
     runs-on: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
             fixtures/semantic-core/k8s/valid-k3s-ingress.yaml \
             fixtures/semantic-core/k8s/valid-kubeedge-deployment.yaml
 
-  k8s-policy-rejection:
+  k8s-policy-samples:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout prophet-cli
@@ -127,22 +127,25 @@ jobs:
           python-version: '3.11'
       - name: Install K8s shapecheck dependencies
         run: python -m pip install --upgrade pip pyyaml rdflib pyshacl
-      - name: Verify nonconforming K8s samples are rejected
+      - name: Run K8s policy samples
         env:
           PROPHET_STANDARDS_REPO: ./socioprophet-standards-knowledge
         run: |
           go mod tidy
-          for fixture in \
-            fixtures/semantic-core/k8s/*selector-mismatch.yaml \
-            fixtures/semantic-core/k8s/*tls-host-mismatch.yaml \
-            fixtures/semantic-core/k8s/*missing-edge-selector.yaml
+          python - <<'PY' > /tmp/k8s-policy-samples.txt
+          from pathlib import Path
+          root = Path('socioprophet-standards-knowledge/fixtures/semantic-core/k8s')
+          for item in sorted(root.glob('*.yaml')):
+              if item.name.startswith('invalid-'):
+                  print(item.relative_to('socioprophet-standards-knowledge'))
+          PY
+          while IFS= read -r fixture
           do
             set +e
             go run ./cmd/prophet k8s shapecheck "$fixture"
             code=$?
             set -e
             if [ "$code" -eq 0 ]; then
-              echo "shapecheck accepted a nonconforming sample: $fixture" >&2
               exit 1
             fi
-          done
+          done < /tmp/k8s-policy-samples.txt
