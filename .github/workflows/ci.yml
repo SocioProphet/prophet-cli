@@ -102,4 +102,8 @@ jobs:
           PROPHET_STANDARDS_REPO: ./socioprophet-standards-knowledge
         run: |
           go mod tidy
-          go run ./cmd/prophet k8s shapecheck fixtures/semantic-core/k8s/valid-nodeport-service.yaml
+          go run ./cmd/prophet k8s shapecheck \
+            fixtures/semantic-core/k8s/valid-nodeport-service.yaml \
+            fixtures/semantic-core/k8s/valid-deployment-service-ingress.yaml \
+            fixtures/semantic-core/k8s/valid-k3s-ingress.yaml \
+            fixtures/semantic-core/k8s/valid-kubeedge-deployment.yaml
