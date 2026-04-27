@@ -24,6 +24,7 @@ REQUIRED_COMMANDS = {
     "lattice-nb-run",
     "lattice-promote",
     "lattice-place",
+    "lattice-safe-plan",
 }
 REQUIRED_SURFACES = {
     "byoc",
@@ -32,6 +33,7 @@ REQUIRED_SURFACES = {
     "notebook-launch",
     "notebook-promotion",
     "placement-decision",
+    "safe-placement-execution",
 }
 
 
