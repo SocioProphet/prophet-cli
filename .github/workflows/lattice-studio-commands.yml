@@ -26,3 +26,4 @@ jobs:
           bash -n scripts/lattice-m2-placement.sh
           bash -n scripts/lattice-nb-run.sh
           bash -n scripts/lattice-promote.sh
+          bash -n scripts/lattice-place.sh

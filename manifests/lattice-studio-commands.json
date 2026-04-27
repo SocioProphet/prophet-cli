@@ -3,7 +3,7 @@
   "kind": "ProphetCliCommandSurface",
   "metadata": {
     "name": "lattice-studio",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "delegatesTo": {
     "repo": "SocioProphet/prophet-platform",
@@ -25,7 +25,8 @@
     "lattice-byoc",
     "lattice-m2-placement",
     "lattice-nb-run",
-    "lattice-promote"
+    "lattice-promote",
+    "lattice-place"
   ],
   "surfaces": [
     "lattice-studio",
@@ -43,6 +44,7 @@
     "cloudshell-fog",
     "m2-topolvm",
     "notebook-launch",
-    "notebook-promotion"
+    "notebook-promotion",
+    "placement-decision"
   ]
 }

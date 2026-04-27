@@ -23,6 +23,7 @@ REQUIRED_COMMANDS = {
     "lattice-m2-placement",
     "lattice-nb-run",
     "lattice-promote",
+    "lattice-place",
 }
 REQUIRED_SURFACES = {
     "byoc",
@@ -30,6 +31,7 @@ REQUIRED_SURFACES = {
     "m2-topolvm",
     "notebook-launch",
     "notebook-promotion",
+    "placement-decision",
 }
 
 
