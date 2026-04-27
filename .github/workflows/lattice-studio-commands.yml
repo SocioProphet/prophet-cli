@@ -20,4 +20,9 @@ jobs:
       - name: Validate Lattice Studio command surface
         run: python scripts/validate_lattice_studio_commands.py
       - name: Check facade script syntax
-        run: bash -n scripts/lattice-studio.sh
+        run: |
+          bash -n scripts/lattice-studio.sh
+          bash -n scripts/lattice-byoc.sh
+          bash -n scripts/lattice-m2-placement.sh
+          bash -n scripts/lattice-nb-run.sh
+          bash -n scripts/lattice-promote.sh
