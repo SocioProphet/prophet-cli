@@ -3,7 +3,7 @@
   "kind": "ProphetCliCommandSurface",
   "metadata": {
     "name": "lattice-studio",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "delegatesTo": {
     "repo": "SocioProphet/prophet-platform",
@@ -26,7 +26,8 @@
     "lattice-m2-placement",
     "lattice-nb-run",
     "lattice-promote",
-    "lattice-place"
+    "lattice-place",
+    "lattice-safe-plan"
   ],
   "surfaces": [
     "lattice-studio",
@@ -45,6 +46,7 @@
     "m2-topolvm",
     "notebook-launch",
     "notebook-promotion",
-    "placement-decision"
+    "placement-decision",
+    "safe-placement-execution"
   ]
 }
