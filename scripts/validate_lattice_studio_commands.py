@@ -26,6 +26,7 @@ REQUIRED_COMMANDS = {
     "lattice-place",
     "lattice-safe-plan",
     "lattice-approve",
+    "lattice-query",
 }
 REQUIRED_SURFACES = {
     "byoc",
@@ -36,6 +37,7 @@ REQUIRED_SURFACES = {
     "placement-decision",
     "safe-placement-execution",
     "execution-approval",
+    "federated-query",
 }
 
 
