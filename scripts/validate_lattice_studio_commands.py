@@ -25,6 +25,7 @@ REQUIRED_COMMANDS = {
     "lattice-promote",
     "lattice-place",
     "lattice-safe-plan",
+    "lattice-approve",
 }
 REQUIRED_SURFACES = {
     "byoc",
@@ -34,6 +35,7 @@ REQUIRED_SURFACES = {
     "notebook-promotion",
     "placement-decision",
     "safe-placement-execution",
+    "execution-approval",
 }
 
 
