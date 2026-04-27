@@ -1,0 +1,37 @@
+{
+  "apiVersion": "cli.socioprophet.dev/v1",
+  "kind": "ProphetCliCommandSurface",
+  "metadata": {
+    "name": "lattice-studio",
+    "version": "0.1.0"
+  },
+  "delegatesTo": {
+    "repo": "SocioProphet/prophet-platform",
+    "module": "lattice_studio.cli",
+    "path": "apps/lattice-studio"
+  },
+  "commands": [
+    "create-session",
+    "emit-demo-catalog",
+    "emit-platform-records",
+    "emit-atlas-context",
+    "emit-ontogenesis-context",
+    "emit-paas-plan",
+    "emit-local-dev",
+    "emit-memory",
+    "emit-lampstand-demo"
+  ],
+  "surfaces": [
+    "lattice-studio",
+    "datahub",
+    "sourceos-local",
+    "socios-linux",
+    "atlas",
+    "ontogenesis",
+    "lampstand-local-search",
+    "memory-mesh",
+    "porter-paas-devops",
+    "openclaw",
+    "agentplane"
+  ]
+}
