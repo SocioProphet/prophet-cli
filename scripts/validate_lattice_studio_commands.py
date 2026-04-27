@@ -17,6 +17,19 @@ REQUIRED_COMMANDS = {
     "emit-local-dev",
     "emit-memory",
     "emit-lampstand-demo",
+    "emit-notebook-plane",
+    "emit-execution",
+    "lattice-byoc",
+    "lattice-m2-placement",
+    "lattice-nb-run",
+    "lattice-promote",
+}
+REQUIRED_SURFACES = {
+    "byoc",
+    "cloudshell-fog",
+    "m2-topolvm",
+    "notebook-launch",
+    "notebook-promotion",
 }
 
 
@@ -34,6 +47,8 @@ def validate(path: Path) -> None:
     require(delegates.get("repo") == "SocioProphet/prophet-platform", "delegate repo mismatch")
     commands = set(doc.get("commands", []))
     require(REQUIRED_COMMANDS.issubset(commands), f"missing commands: {sorted(REQUIRED_COMMANDS - commands)}")
+    surfaces = set(doc.get("surfaces", []))
+    require(REQUIRED_SURFACES.issubset(surfaces), f"missing surfaces: {sorted(REQUIRED_SURFACES - surfaces)}")
 
 
 def main() -> int:
