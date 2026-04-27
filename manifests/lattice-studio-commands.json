@@ -3,7 +3,7 @@
   "kind": "ProphetCliCommandSurface",
   "metadata": {
     "name": "lattice-studio",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "delegatesTo": {
     "repo": "SocioProphet/prophet-platform",
@@ -19,7 +19,13 @@
     "emit-paas-plan",
     "emit-local-dev",
     "emit-memory",
-    "emit-lampstand-demo"
+    "emit-lampstand-demo",
+    "emit-notebook-plane",
+    "emit-execution",
+    "lattice-byoc",
+    "lattice-m2-placement",
+    "lattice-nb-run",
+    "lattice-promote"
   ],
   "surfaces": [
     "lattice-studio",
@@ -32,6 +38,11 @@
     "memory-mesh",
     "porter-paas-devops",
     "openclaw",
-    "agentplane"
+    "agentplane",
+    "byoc",
+    "cloudshell-fog",
+    "m2-topolvm",
+    "notebook-launch",
+    "notebook-promotion"
   ]
 }
