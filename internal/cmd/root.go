@@ -37,15 +37,25 @@ func NewRootCommand() *cobra.Command {
 	root.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "enable debug output")
 	root.PersistentFlags().BoolVar(&flags.NoPager, "no-pager", false, "disable pager")
 	root.AddCommand(
+		newSuiteVersionCmd(),
+		newSuiteDoctorCmd(),
+		newSuiteSelfTestCmd(),
+		newSuiteEvidenceCmd(),
 		newBootstrapCmd(),
 		newVocabCmd(),
 		newBindingsCmd(),
 		newK8sCmd(),
 		newControlNodeCmd(),
 		newA2ACmd(),
+		newDevtoolsCmd(),
+		newLabCmd(),
+		newSourceOSCmd(),
+		newHolmesCmd(),
+		newModelCmd(),
+		newGuardrailCmd(),
+		newAgentSuiteCmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
 		newPlaceholderCmd("plan", "Agent assist: generate a plan over deterministic tools"),
-		newPlaceholderCmd("agent", "Agent execute façade (approval-gated scaffold)"),
 		newPlaceholderCmd("mcp", "MCP boundary façade"),
 	)
 	return root
