@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -169,31 +169,7 @@ func delegateOrReport(tool string, args []string, command string) error {
 	if err := run.Run(); err != nil {
 		return emit(map[string]any{"command": command, "status": "failed", "delegate": tool, "stdout": stdout.String(), "stderr": stderr.String(), "error": err.Error()})
 	}
-	if strings.TrimSpace(stderr.String()) != "" {
-		return emit(map[string]any{"command": command, "status": "ok", "delegate": tool, "stdout": stdout.String(), "stderr": stderr.String()})
-	}
-	if strings.TrimSpace(stdout.String()) == "" {
-		return emit(map[string]any{"command": command, "status": "ok", "delegate": tool})
-	}
-	_, err = cmdOutput(stdout.String())
-	return err
-}
-
-func cmdOutput(s string) (int, error) {
-	if strings.TrimSpace(s) == "" {
-		return 0, nil
-	}
-	_, err := strings.NewReader(s).WriteTo(outputWriter{})
-	return len(s), err
-}
-
-type outputWriter struct{}
-
-func (outputWriter) Write(p []byte) (int, error) {
-	if len(p) == 0 {
-		return 0, nil
-	}
-	return 0, errors.New("direct delegate output writer unavailable")
+	return emit(map[string]any{"command": command, "status": "ok", "delegate": tool, "stdout": stdout.String(), "stderr": stderr.String()})
 }
 
 func toolCheck(tool string) map[string]any {
@@ -202,4 +178,11 @@ func toolCheck(tool string) map[string]any {
 		return map[string]any{"tool": tool, "status": "missing"}
 	}
 	return map[string]any{"tool": tool, "status": "present", "path": path}
+}
+
+func commandRequiredFlag(name string, value string) error {
+	if strings.TrimSpace(value) == "" {
+		return fmt.Errorf("missing required --%s", name)
+	}
+	return nil
 }
