@@ -30,3 +30,4 @@ jobs:
           bash -n scripts/lattice-safe-plan.sh
           bash -n scripts/lattice-approve.sh
           bash -n scripts/lattice-query.sh
+          bash -n scripts/lattice-route.sh
