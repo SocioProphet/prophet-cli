@@ -29,3 +29,4 @@ jobs:
           bash -n scripts/lattice-place.sh
           bash -n scripts/lattice-safe-plan.sh
           bash -n scripts/lattice-approve.sh
+          bash -n scripts/lattice-query.sh
