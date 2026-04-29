@@ -56,11 +56,13 @@ prophet holmes graph ./document.txt
 prophet holmes govern ./document.txt
 ```
 
-### Model, guardrail, and agent registry
+### Model fabric
 
 ```bash
 prophet model route --task summarize --privacy local-first
 prophet guardrail test examples/policy.json examples/input.json
+prophet ledger validate
+prophet ledger records
 prophet agent registry list
 ```
 
@@ -72,9 +74,10 @@ prophet agent registry list
 - `holmes` for language intelligence commands.
 - `model-router` for model/service routing commands.
 - `guardrail-fabric` for guardrail policy evaluation.
+- `model-governance-ledger` for model evidence, promotion, and rollback records.
 - `agent-registry` for agent spec/identity/session registry commands.
 
-Missing delegated tools must be reported as `not-yet-wired`, not as success.
+Model-fabric commands may use local development repository fallbacks when a binary is not yet installed. The fallback root is `$PROPHET_DEV_ROOT` when set, otherwise `~/dev`. Missing binaries and missing local repos must be reported explicitly as `not-yet-installed`; they must not be reported as successful execution.
 
 ## Release contract
 
