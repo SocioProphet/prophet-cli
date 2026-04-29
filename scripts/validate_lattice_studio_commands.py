@@ -27,6 +27,7 @@ REQUIRED_COMMANDS = {
     "lattice-safe-plan",
     "lattice-approve",
     "lattice-query",
+    "lattice-route",
 }
 REQUIRED_SURFACES = {
     "byoc",
@@ -38,6 +39,7 @@ REQUIRED_SURFACES = {
     "safe-placement-execution",
     "execution-approval",
     "federated-query",
+    "query-routing-dry-run",
 }
 
 
