@@ -41,6 +41,11 @@ validate: build vet test
 	bin/$(BIN) lab list >/tmp/prophet-labs.json
 	bin/$(BIN) sourceos carry list >/tmp/prophet-sourceos-carry-list.json
 	bin/$(BIN) holmes search "truth and evidence" >/tmp/prophet-holmes-search.json
+	bin/$(BIN) model route --task summarize --privacy local-first >/tmp/prophet-model-route.json
+	bin/$(BIN) guardrail test examples/policy.json examples/input.json >/tmp/prophet-guardrail-test.json
+	bin/$(BIN) ledger validate >/tmp/prophet-ledger-validate.json
+	bin/$(BIN) ledger records >/tmp/prophet-ledger-records.json
+	bin/$(BIN) agent registry list >/tmp/prophet-agent-registry-list.json
 
 verify: fmt validate
 

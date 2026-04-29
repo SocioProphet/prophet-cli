@@ -11,7 +11,7 @@ import (
 
 func newSuiteDoctorCmd() *cobra.Command {
 	return &cobra.Command{Use: "doctor", Short: "Check Prophet suite readiness", RunE: func(cmd *cobra.Command, args []string) error {
-		tools := []string{"sourceos-ai", "holmes", "model-router", "guardrail-fabric", "agent-registry"}
+		tools := []string{"sourceos-ai", "holmes", "model-router", "guardrail-fabric", "model-governance-ledger", "agent-registry"}
 		checks := make([]map[string]any, 0, len(tools))
 		for _, tool := range tools {
 			checks = append(checks, toolCheck(tool))
@@ -123,7 +123,7 @@ func newModelCmd() *cobra.Command {
 	route := &cobra.Command{Use: "route", Short: "Route a model/service request", RunE: func(cmd *cobra.Command, args []string) error {
 		task, _ := cmd.Flags().GetString("task")
 		privacy, _ := cmd.Flags().GetString("privacy")
-		return delegateOrReport("model-router", []string{"route", "--task", task, "--privacy", privacy}, "prophet model route")
+		return delegateOrFallback("model-router", []string{"route", "--task", task, "--privacy", privacy}, "prophet model route", fabricFallback{Repo: "model-router", Script: "tools/model_router.py", Args: []string{"emit-demo-decision"}})
 	}}
 	route.Flags().String("task", "", "task name")
 	route.Flags().String("privacy", "standard", "privacy policy")
@@ -133,14 +133,18 @@ func newModelCmd() *cobra.Command {
 
 func newGuardrailCmd() *cobra.Command {
 	cmd := &cobra.Command{Use: "guardrail", Short: "Guardrail fabric facade"}
-	cmd.AddCommand(delegateArgsCommand("test <policy.json> <input.json>", "Test guardrail policy", "guardrail-fabric", []string{"test"}, cobra.ExactArgs(2)))
+	cmd.AddCommand(&cobra.Command{Use: "test <policy.json> <input.json>", Short: "Test guardrail policy", Args: cobra.ExactArgs(2), RunE: func(cmd *cobra.Command, args []string) error {
+		return delegateOrFallback("guardrail-fabric", append([]string{"test"}, args...), "prophet guardrail test", fabricFallback{Repo: "guardrail-fabric", Script: "tools/guardrail_fabric.py", Args: []string{"emit-demo-decision"}})
+	}})
 	return cmd
 }
 
 func newAgentSuiteCmd() *cobra.Command {
 	cmd := &cobra.Command{Use: "agent", Short: "Agent registry and execution facade"}
 	registry := &cobra.Command{Use: "registry", Short: "Agent registry facade"}
-	registry.AddCommand(delegateCommand("list", "List agent registry entries", "agent-registry", []string{"list"}))
+	registry.AddCommand(&cobra.Command{Use: "list", Short: "List agent registry entries", RunE: func(cmd *cobra.Command, args []string) error {
+		return delegateOrFallback("agent-registry", []string{"list"}, "prophet agent registry list", fabricFallback{Repo: "agent-registry", RecordGlob: "examples/*.json"})
+	}})
 	cmd.AddCommand(registry)
 	return cmd
 }
