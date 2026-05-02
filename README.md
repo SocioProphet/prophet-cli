@@ -9,6 +9,8 @@ Façade repo for Prophet command surface and SourceOS bootstrap delegation.
 | Prophet command | Delegate | Owning repo |
 |---|---|---|
 | `prophet sourceos local-model ...` | `sourceosctl local-model ...` | `SourceOS-Linux/sourceos-devtools` |
+| `prophet sourceos network ...` | `sourceosctl network ...` | `SourceOS-Linux/sourceos-devtools` |
+| `prophet sourceos native-assistant ...` | `sourceosctl native-assistant ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos agent-machine ...` | `sourceosctl agent-machine ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos office ...` | `sourceosctl office ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos agent-term ...` | `agent-term ...` | `SourceOS-Linux/agent-term` |
@@ -20,6 +22,11 @@ prophet sourceos local-model doctor
 prophet sourceos local-model profiles
 prophet sourceos local-model plan --profile local-llama32-1b
 prophet sourceos local-model route --task-class office-assist
+prophet sourceos network doctor
+prophet sourceos network plan --enterprise --mesh --allow-listed --destination models.enterprise.example
+prophet sourceos network provider --provider-class openai-compatible --owner user
+prophet sourceos native-assistant plan --operation open-workroom
+prophet sourceos native-assistant plan --operation create-office-artifact
 prophet sourceos agent-machine mounts plan
 prophet sourceos agent-machine mounts init --dry-run
 prophet sourceos office doctor
@@ -47,6 +54,9 @@ brew install agent-term
 This repo does not own:
 
 - Local Model Door runtime logic;
+- Network Door / Firewall Door / Mesh Door implementation;
+- BYOM provider connectivity or credentials;
+- native assistant runtime adapters, Siri/App Intents/Shortcuts integration, Android intents, Windows shell APIs, browser extension transports, or MCP/native transports;
 - model weights, model downloads, or inference;
 - personal tuning or personalization governance;
 - Agent Machine implementation;
