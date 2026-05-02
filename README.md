@@ -8,6 +8,7 @@ Façade repo for Prophet command surface and SourceOS bootstrap delegation.
 
 | Prophet command | Delegate | Owning repo |
 |---|---|---|
+| `prophet sourceos local-model ...` | `sourceosctl local-model ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos agent-machine ...` | `sourceosctl agent-machine ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos office ...` | `sourceosctl office ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos agent-term ...` | `agent-term ...` | `SourceOS-Linux/agent-term` |
@@ -15,6 +16,10 @@ Façade repo for Prophet command surface and SourceOS bootstrap delegation.
 ## Examples
 
 ```bash
+prophet sourceos local-model doctor
+prophet sourceos local-model profiles
+prophet sourceos local-model plan --profile local-llama32-1b
+prophet sourceos local-model route --task-class office-assist
 prophet sourceos agent-machine mounts plan
 prophet sourceos agent-machine mounts init --dry-run
 prophet sourceos office doctor
@@ -41,6 +46,9 @@ brew install agent-term
 
 This repo does not own:
 
+- Local Model Door runtime logic;
+- model weights, model downloads, or inference;
+- personal tuning or personalization governance;
 - Agent Machine implementation;
 - Office generation/conversion engines;
 - LibreOffice, Collabora, ONLYOFFICE, Microsoft Graph, or Google Workspace adapters;
