@@ -30,6 +30,42 @@ def test_sourceos_local_model_delegates_to_sourceosctl(monkeypatch):
     assert calls == [["/usr/bin/sourceosctl", "local-model", "doctor"]]
 
 
+def test_sourceos_network_delegates_to_sourceosctl(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["sourceos", "network", "doctor"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sourceosctl", "network", "doctor"]]
+
+
+def test_sourceos_native_assistant_delegates_to_sourceosctl(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["sourceos", "native-assistant", "plan", "--operation", "open-workroom"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sourceosctl", "native-assistant", "plan", "--operation", "open-workroom"]]
+
+
 def test_sourceos_office_delegates_to_sourceosctl(monkeypatch):
     calls: list[list[str]] = []
 
