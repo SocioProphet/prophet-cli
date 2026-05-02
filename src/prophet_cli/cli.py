@@ -47,6 +47,16 @@ def build_parser() -> argparse.ArgumentParser:
     local_model = sourceos_sub.add_parser("local-model", help="Delegate SourceOS Local Model Door commands")
     local_model.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sourceosctl local-model")
 
+    network = sourceos_sub.add_parser("network", help="Delegate SourceOS Network Door commands")
+    network.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sourceosctl network")
+
+    native_assistant = sourceos_sub.add_parser(
+        "native-assistant", help="Delegate SourceOS Native Assistant Door commands"
+    )
+    native_assistant.add_argument(
+        "args", nargs=argparse.REMAINDER, help="Arguments passed to sourceosctl native-assistant"
+    )
+
     agent_machine = sourceos_sub.add_parser("agent-machine", help="Delegate SourceOS Agent Machine commands")
     agent_machine.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sourceosctl agent-machine")
 
@@ -66,6 +76,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "sourceos":
         if args.sourceos_command == "local-model":
             return _delegate("sourceosctl", ["local-model", *args.args])
+        if args.sourceos_command == "network":
+            return _delegate("sourceosctl", ["network", *args.args])
+        if args.sourceos_command == "native-assistant":
+            return _delegate("sourceosctl", ["native-assistant", *args.args])
         if args.sourceos_command == "agent-machine":
             return _delegate("sourceosctl", ["agent-machine", *args.args])
         if args.sourceos_command == "office":
