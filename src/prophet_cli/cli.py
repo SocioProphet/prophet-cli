@@ -44,6 +44,9 @@ def build_parser() -> argparse.ArgumentParser:
     sourceos = sub.add_parser("sourceos", help="Delegate SourceOS local workflows")
     sourceos_sub = sourceos.add_subparsers(dest="sourceos_command", required=True)
 
+    local_model = sourceos_sub.add_parser("local-model", help="Delegate SourceOS Local Model Door commands")
+    local_model.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sourceosctl local-model")
+
     agent_machine = sourceos_sub.add_parser("agent-machine", help="Delegate SourceOS Agent Machine commands")
     agent_machine.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sourceosctl agent-machine")
 
@@ -61,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "sourceos":
+        if args.sourceos_command == "local-model":
+            return _delegate("sourceosctl", ["local-model", *args.args])
         if args.sourceos_command == "agent-machine":
             return _delegate("sourceosctl", ["agent-machine", *args.args])
         if args.sourceos_command == "office":
