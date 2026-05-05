@@ -107,6 +107,10 @@ jobs:
             fixtures/semantic-core/k8s/valid-deployment-service-ingress.yaml \
             fixtures/semantic-core/k8s/valid-k3s-ingress.yaml \
             fixtures/semantic-core/k8s/valid-kubeedge-deployment.yaml
+          (
+            cd socioprophet-standards-knowledge
+            python3 k8s/tools/check_scheduling.py --manifest fixtures/semantic-core/k8s/valid-kubeedge-toleration.yaml --json
+          )
 
   k8s-policy-samples:
     runs-on: ubuntu-latest
