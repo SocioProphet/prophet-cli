@@ -2,6 +2,7 @@ package controlnode
 
 import (
 	"context"
+	"errors"
 	"testing"
 )
 
@@ -15,13 +16,20 @@ func TestStatusIncludesContractsRepo(t *testing.T) {
 	}
 }
 
-func TestProcessReturnsProbeEnvelope(t *testing.T) {
+func TestProcessFailsClosedAndReturnsProbeEnvelope(t *testing.T) {
 	resp, err := Process(context.Background(), "input.json", "out")
-	if err != nil {
-		t.Fatalf("Process returned error: %v", err)
+	if err == nil {
+		t.Fatalf("expected Process to fail when processor cannot run")
+	}
+	var processErr ProcessError
+	if !errors.As(err, &processErr) {
+		t.Fatalf("expected ProcessError, got %T", err)
 	}
 	if got := resp["operation"]; got != "process" {
 		t.Fatalf("unexpected operation: %v", got)
+	}
+	if got := resp["status"]; got != "failed" {
+		t.Fatalf("expected failed status, got %v", got)
 	}
 	probe, ok := resp["probe"].(ExecResult)
 	if !ok {
