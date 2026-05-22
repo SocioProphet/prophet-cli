@@ -46,6 +46,9 @@ prophet governed-runner smoke --output-dir ./.socioprophet/smoke/governed-runner
 prophet governed-runner list --runs-root ./.socioprophet/smoke/governed-runner
 prophet governed-runner status ./.socioprophet/smoke/governed-runner/run
 prophet governed-runner inspect ./.socioprophet/smoke/governed-runner/run
+prophet governed-runner tool list-tools
+prophet governed-runner tool call governed_runner.doctor --args-json '{}'
+prophet governed-runner tool call governed_runner.smoke --args-json '{"output_dir":".socioprophet/smoke/governed-runner"}'
 prophet governed-runner preflight ./governed-run-contract.json
 prophet governed-runner admit ./governed-run-contract.json --preflight ./preflight-receipt.json --authority-state ./agent-authority-current-state.json --projected-cost-usd 0.25
 prophet governed-runner dossier ./.socioprophet/runs/governed-run-alpha-001
@@ -72,10 +75,12 @@ python3 -m pip install -e /path/to/agentplane
 sp-run doctor
 sp-run smoke --output-dir ./.socioprophet/smoke/governed-runner
 sp-run list --runs-root ./.socioprophet/smoke/governed-runner
+sp-run tool list-tools
 prophet agentplane doctor
 prophet governed-runner doctor
 prophet governed-runner smoke --output-dir ./.socioprophet/smoke/governed-runner
 prophet governed-runner list --runs-root ./.socioprophet/smoke/governed-runner
+prophet governed-runner tool list-tools
 ```
 
 ## Boundary
