@@ -33,6 +33,11 @@ def _delegate(binary: str, args: Sequence[str]) -> int:
     return int(completed.returncode)
 
 
+def _add_sp_run_delegate(sub: argparse._SubParsersAction, name: str, help_text: str) -> None:
+    parser = sub.add_parser(name, help=help_text)
+    parser.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sp-run")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="prophet",
@@ -67,8 +72,8 @@ def build_parser() -> argparse.ArgumentParser:
     agent_term = sourceos_sub.add_parser("agent-term", help="Delegate AgentTerm commands")
     agent_term.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to agent-term")
 
-    agentplane = sub.add_parser("agentplane", help="Delegate AgentPlane governed-runner commands")
-    agentplane.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sp-run")
+    _add_sp_run_delegate(sub, "agentplane", "Delegate AgentPlane governed-runner commands")
+    _add_sp_run_delegate(sub, "governed-runner", "Delegate governed-runner commands")
 
     return parser
 
@@ -91,7 +96,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.sourceos_command == "agent-term":
             return _delegate("agent-term", list(args.args))
 
-    if args.command == "agentplane":
+    if args.command in {"agentplane", "governed-runner"}:
         return _delegate("sp-run", list(args.args))
 
     parser.error("unknown command")
