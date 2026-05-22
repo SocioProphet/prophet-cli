@@ -1,8 +1,8 @@
 # prophet-cli
 
-Façade repo for Prophet command surface and SourceOS bootstrap delegation.
+Façade repo for Prophet command surface and SourceOS / AgentPlane bootstrap delegation.
 
-`prophet` is the stable operator-facing command. It does not duplicate implementation logic that belongs in SourceOS or AgentTerm repositories.
+`prophet` is the stable operator-facing command. It does not duplicate implementation logic that belongs in SourceOS, AgentTerm, or AgentPlane repositories.
 
 ## Delegation model
 
@@ -14,6 +14,7 @@ Façade repo for Prophet command surface and SourceOS bootstrap delegation.
 | `prophet sourceos agent-machine ...` | `sourceosctl agent-machine ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos office ...` | `sourceosctl office ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos agent-term ...` | `agent-term ...` | `SourceOS-Linux/agent-term` |
+| `prophet agentplane ...` | `sp-run ...` | `SocioProphet/agentplane` |
 
 ## Examples
 
@@ -34,6 +35,11 @@ prophet sourceos office plan --artifact-type slide-deck --format pptx --title "D
 prophet sourceos office generate --dry-run --artifact-type document --format docx --title "Demo Report"
 prophet sourceos office convert ./example.docx --to pdf --dry-run
 prophet sourceos agent-term office create-deck '!prophet-workspace' --workroom workroom-demo-0001 --title 'Demo Briefing Deck'
+prophet agentplane doctor
+prophet agentplane preflight ./governed-run-contract.json
+prophet agentplane admit ./governed-run-contract.json --preflight ./preflight-receipt.json --authority-state ./agent-authority-current-state.json --projected-cost-usd 0.25
+prophet agentplane dossier ./.socioprophet/runs/governed-run-alpha-001
+prophet agentplane validate-dossier ./run-dossier.json
 ```
 
 ## Install path
@@ -48,6 +54,14 @@ brew install agent-term
 ```
 
 `prophet-cli` only provides the `prophet` facade. The delegated binaries must also be installed or available on `PATH`.
+
+For AgentPlane governed-runner commands, install or expose the AgentPlane-owned `sp-run` delegate from `SocioProphet/agentplane`:
+
+```bash
+python3 -m pip install -e /path/to/agentplane
+sp-run doctor
+prophet agentplane doctor
+```
 
 ## Boundary
 
@@ -64,7 +78,10 @@ This repo does not own:
 - LibreOffice, Collabora, ONLYOFFICE, Microsoft Graph, or Google Workspace adapters;
 - AgentTerm event log semantics;
 - AgentPlane evidence contracts;
-- Agent Registry grants;
+- AgentPlane governed-runner implementation;
+- Agent Registry grants or authority state;
 - Homebrew formulae.
 
 Those remain in their owning repositories.
+
+`prophet agentplane ...` is a facade over `sp-run ...`; the implementation remains in `SocioProphet/agentplane`.
