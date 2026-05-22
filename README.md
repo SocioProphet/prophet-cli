@@ -43,6 +43,9 @@ prophet agentplane dossier ./.socioprophet/runs/governed-run-alpha-001
 prophet agentplane validate-dossier ./run-dossier.json
 prophet governed-runner doctor
 prophet governed-runner smoke --output-dir ./.socioprophet/smoke/governed-runner
+prophet governed-runner list --runs-root ./.socioprophet/smoke/governed-runner
+prophet governed-runner status ./.socioprophet/smoke/governed-runner/run
+prophet governed-runner inspect ./.socioprophet/smoke/governed-runner/run
 prophet governed-runner preflight ./governed-run-contract.json
 prophet governed-runner admit ./governed-run-contract.json --preflight ./preflight-receipt.json --authority-state ./agent-authority-current-state.json --projected-cost-usd 0.25
 prophet governed-runner dossier ./.socioprophet/runs/governed-run-alpha-001
@@ -68,9 +71,11 @@ For AgentPlane governed-runner commands, install or expose the AgentPlane-owned 
 python3 -m pip install -e /path/to/agentplane
 sp-run doctor
 sp-run smoke --output-dir ./.socioprophet/smoke/governed-runner
+sp-run list --runs-root ./.socioprophet/smoke/governed-runner
 prophet agentplane doctor
 prophet governed-runner doctor
 prophet governed-runner smoke --output-dir ./.socioprophet/smoke/governed-runner
+prophet governed-runner list --runs-root ./.socioprophet/smoke/governed-runner
 ```
 
 ## Boundary
