@@ -118,6 +118,76 @@ def test_sourceos_agent_term_delegates_to_agent_term(monkeypatch):
     assert calls == [["/usr/bin/agent-term", "office", "inspect", "!prophet-workspace", "/tmp/demo.pptx"]]
 
 
+def test_agentplane_doctor_delegates_to_sp_run(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["agentplane", "doctor"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sp-run", "doctor"]]
+
+
+def test_agentplane_preflight_delegates_to_sp_run(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["agentplane", "preflight", "contract.json"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sp-run", "preflight", "contract.json"]]
+
+
+def test_agentplane_admit_delegates_to_sp_run(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main([
+        "agentplane",
+        "admit",
+        "contract.json",
+        "--preflight",
+        "preflight.json",
+        "--authority-state",
+        "authority.json",
+    ])
+
+    assert rc == 0
+    assert calls == [[
+        "/usr/bin/sp-run",
+        "admit",
+        "contract.json",
+        "--preflight",
+        "preflight.json",
+        "--authority-state",
+        "authority.json",
+    ]]
+
+
 def test_missing_delegate_returns_127(monkeypatch, capsys):
     monkeypatch.setattr("shutil.which", lambda binary: None)
 
@@ -127,3 +197,14 @@ def test_missing_delegate_returns_127(monkeypatch, capsys):
     assert rc == 127
     assert "required delegate not found: sourceosctl" in captured.err
     assert "sourceos-devtools" in captured.err
+
+
+def test_missing_sp_run_delegate_returns_127(monkeypatch, capsys):
+    monkeypatch.setattr("shutil.which", lambda binary: None)
+
+    rc = main(["agentplane", "doctor"])
+
+    captured = capsys.readouterr()
+    assert rc == 127
+    assert "required delegate not found: sp-run" in captured.err
+    assert "AgentPlane" in captured.err
