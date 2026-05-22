@@ -1,8 +1,8 @@
 """Prophet facade CLI.
 
 The `prophet` command is a stable operator-facing facade. It delegates local
-SourceOS implementation work to the owning CLIs instead of duplicating engine
-logic here.
+SourceOS and AgentPlane implementation work to the owning CLIs instead of
+duplicating engine logic here.
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from prophet_cli import __version__
 DELEGATES = {
     "sourceosctl": "Install sourceos-devtools from SocioProphet/homebrew-prophet or run it from SourceOS-Linux/sourceos-devtools.",
     "agent-term": "Install agent-term from SocioProphet/homebrew-prophet or run it from SourceOS-Linux/agent-term.",
+    "sp-run": "Install AgentPlane so the sp-run delegate is available on PATH, or run it from SocioProphet/agentplane.",
 }
 
 
@@ -66,6 +67,9 @@ def build_parser() -> argparse.ArgumentParser:
     agent_term = sourceos_sub.add_parser("agent-term", help="Delegate AgentTerm commands")
     agent_term.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to agent-term")
 
+    agentplane = sub.add_parser("agentplane", help="Delegate AgentPlane governed-runner commands")
+    agentplane.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to sp-run")
+
     return parser
 
 
@@ -86,6 +90,9 @@ def main(argv: list[str] | None = None) -> int:
             return _delegate("sourceosctl", ["office", *args.args])
         if args.sourceos_command == "agent-term":
             return _delegate("agent-term", list(args.args))
+
+    if args.command == "agentplane":
+        return _delegate("sp-run", list(args.args))
 
     parser.error("unknown command")
     return 2
