@@ -15,6 +15,7 @@ Façade repo for Prophet command surface and SourceOS / AgentPlane bootstrap del
 | `prophet sourceos office ...` | `sourceosctl office ...` | `SourceOS-Linux/sourceos-devtools` |
 | `prophet sourceos agent-term ...` | `agent-term ...` | `SourceOS-Linux/agent-term` |
 | `prophet agentplane ...` | `sp-run ...` | `SocioProphet/agentplane` |
+| `prophet governed-runner ...` | `sp-run ...` | `SocioProphet/agentplane` |
 
 ## Examples
 
@@ -40,6 +41,11 @@ prophet agentplane preflight ./governed-run-contract.json
 prophet agentplane admit ./governed-run-contract.json --preflight ./preflight-receipt.json --authority-state ./agent-authority-current-state.json --projected-cost-usd 0.25
 prophet agentplane dossier ./.socioprophet/runs/governed-run-alpha-001
 prophet agentplane validate-dossier ./run-dossier.json
+prophet governed-runner doctor
+prophet governed-runner preflight ./governed-run-contract.json
+prophet governed-runner admit ./governed-run-contract.json --preflight ./preflight-receipt.json --authority-state ./agent-authority-current-state.json --projected-cost-usd 0.25
+prophet governed-runner dossier ./.socioprophet/runs/governed-run-alpha-001
+prophet governed-runner validate-dossier ./run-dossier.json
 ```
 
 ## Install path
@@ -61,6 +67,7 @@ For AgentPlane governed-runner commands, install or expose the AgentPlane-owned 
 python3 -m pip install -e /path/to/agentplane
 sp-run doctor
 prophet agentplane doctor
+prophet governed-runner doctor
 ```
 
 ## Boundary
@@ -84,4 +91,4 @@ This repo does not own:
 
 Those remain in their owning repositories.
 
-`prophet agentplane ...` is a facade over `sp-run ...`; the implementation remains in `SocioProphet/agentplane`.
+`prophet agentplane ...` and `prophet governed-runner ...` are facades over `sp-run ...`; the implementation remains in `SocioProphet/agentplane`.
