@@ -17,6 +17,8 @@ Façade repo for Prophet command surface and SourceOS / AgentPlane bootstrap del
 | `prophet agentplane ...` | `sp-run ...` | `SocioProphet/agentplane` |
 | `prophet governed-runner ...` | `sp-run ...` | `SocioProphet/agentplane` |
 
+The governed-runner cross-repo boundary is recorded in [`docs/governed-runner-delegation-map.md`](docs/governed-runner-delegation-map.md).
+
 ## Examples
 
 ```bash
