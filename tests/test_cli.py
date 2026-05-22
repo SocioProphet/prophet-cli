@@ -188,6 +188,60 @@ def test_agentplane_admit_delegates_to_sp_run(monkeypatch):
     ]]
 
 
+def test_governed_runner_alias_delegates_to_sp_run(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["governed-runner", "doctor"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sp-run", "doctor"]]
+
+
+def test_governed_runner_dossier_delegates_to_sp_run(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["governed-runner", "dossier", ".socioprophet/runs/demo"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sp-run", "dossier", ".socioprophet/runs/demo"]]
+
+
+def test_governed_runner_validate_dossier_delegates_to_sp_run(monkeypatch):
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr("shutil.which", lambda binary: f"/usr/bin/{binary}")
+
+    def fake_run(cmd, check=False):
+        calls.append(cmd)
+        assert check is False
+        return Completed(0)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    rc = main(["governed-runner", "validate-dossier", "run-dossier.json"])
+
+    assert rc == 0
+    assert calls == [["/usr/bin/sp-run", "validate-dossier", "run-dossier.json"]]
+
+
 def test_missing_delegate_returns_127(monkeypatch, capsys):
     monkeypatch.setattr("shutil.which", lambda binary: None)
 
@@ -203,6 +257,17 @@ def test_missing_sp_run_delegate_returns_127(monkeypatch, capsys):
     monkeypatch.setattr("shutil.which", lambda binary: None)
 
     rc = main(["agentplane", "doctor"])
+
+    captured = capsys.readouterr()
+    assert rc == 127
+    assert "required delegate not found: sp-run" in captured.err
+    assert "AgentPlane" in captured.err
+
+
+def test_missing_sp_run_for_governed_runner_alias_returns_127(monkeypatch, capsys):
+    monkeypatch.setattr("shutil.which", lambda binary: None)
+
+    rc = main(["governed-runner", "doctor"])
 
     captured = capsys.readouterr()
     assert rc == 127
