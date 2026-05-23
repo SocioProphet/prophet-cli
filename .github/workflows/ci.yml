@@ -110,6 +110,13 @@ jobs:
           (
             cd socioprophet-standards-knowledge
             python3 k8s/tools/check_scheduling.py --manifest fixtures/semantic-core/k8s/valid-kubeedge-toleration.yaml --json
+            set +e
+            python3 k8s/tools/check_scheduling.py --manifest fixtures/semantic-core/k8s/invalid-kubeedge-missing-toleration.yaml --json
+            code=$?
+            set -e
+            if [ "$code" -eq 0 ]; then
+              exit 1
+            fi
           )
 
   k8s-policy-samples:
