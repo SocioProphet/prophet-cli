@@ -46,6 +46,8 @@ validate: build vet test
 	bin/$(BIN) ledger validate >/tmp/prophet-ledger-validate.json
 	bin/$(BIN) ledger records >/tmp/prophet-ledger-records.json
 	bin/$(BIN) agent registry list >/tmp/prophet-agent-registry-list.json
+	bin/$(BIN) spine list >/tmp/prophet-spine-list.json
+	bin/$(BIN) spine gate --help >/tmp/prophet-spine-gate-help.txt
 
 verify: fmt validate
 

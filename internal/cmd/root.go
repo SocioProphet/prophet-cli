@@ -54,6 +54,7 @@ func NewRootCommand() *cobra.Command {
 		newModelCmd(),
 		newGuardrailCmd(),
 		newLedgerCmd(),
+		newSpineCmd(),
 		newAgentSuiteCmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
 		newPlaceholderCmd("plan", "Agent assist: generate a plan over deterministic tools"),
