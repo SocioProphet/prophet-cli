@@ -48,6 +48,9 @@ validate: build vet test
 	bin/$(BIN) agent registry list >/tmp/prophet-agent-registry-list.json
 	bin/$(BIN) spine list >/tmp/prophet-spine-list.json
 	bin/$(BIN) spine gate --help >/tmp/prophet-spine-gate-help.txt
+	bin/$(BIN) enrichment lifecycle >/tmp/prophet-enrichment-lifecycle.json
+	bin/$(BIN) enrichment status >/tmp/prophet-enrichment-status.json
+	bin/$(BIN) enrichment run --seed seed:enrichment/photo-v1 --dry-run >/tmp/prophet-enrichment-dry-run.json
 
 verify: fmt validate
 
