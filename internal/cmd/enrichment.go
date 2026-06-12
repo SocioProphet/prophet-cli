@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -105,13 +106,12 @@ func newEnrichmentValidateCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			gates := []map[string]any{
 				runEnrichmentGate("genesis-seed-schema",
-					"ProCybernetica", []string{"make", "enrichment-twin-fixtures"}),
+					"SocioProphet__ProCybernetica", []string{"make", "enrichment-twin-fixtures"}),
 				runEnrichmentGate("path-content-conflict",
-					"ProCybernetica", []string{"make", "enrichment-twin-path-content-conflict"}),
+					"SocioProphet__ProCybernetica", []string{"make", "enrichment-twin-path-content-conflict"}),
 				runEnrichmentGate("placement-locus-policy",
 					"policy-fabric", []string{"make", "enrichment-placement-locus-policy-validate"}),
-				runEnrichmentGate("spine-gates",
-					"", []string{}), // delegated to prophet spine validate
+				checkSpineGatesForEnrichment(),
 			}
 			allPassed := true
 			for _, g := range gates {
@@ -246,6 +246,28 @@ func lifecycleStatus(stages []map[string]any) string {
 		return "dry_run"
 	}
 	return "pending_execution"
+}
+
+func checkSpineGatesForEnrichment() map[string]any {
+	self, err := os.Executable()
+	if err != nil {
+		self = "prophet"
+	}
+	c := exec.Command(self, "spine", "validate")
+	out, runErr := c.CombinedOutput()
+	if runErr != nil {
+		return map[string]any{
+			"gate":   "spine-gates",
+			"status": "failed",
+			"step":   "prophet spine validate",
+			"stderr": strings.TrimSpace(string(out)),
+		}
+	}
+	return map[string]any{
+		"gate":   "spine-gates",
+		"status": "ok",
+		"step":   "prophet spine validate",
+	}
 }
 
 func runEnrichmentGate(name, repoName string, steps []string) map[string]any {
