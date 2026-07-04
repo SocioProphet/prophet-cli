@@ -1,0 +1,19 @@
+{
+  "name": "prophet-cli archive spine",
+  "version": "0.1.0",
+  "updated_at": "2026-04-12",
+  "purpose": "Preserve repo memory, handoff continuity, and execution status inside the facade repository.",
+  "tracks": [
+    "docs/RUNNING_ARCHIVE.md",
+    "docs/SESSION_WORKLOG.md",
+    "docs/IMPLEMENTATION_STATUS.md"
+  ],
+  "helpers": [
+    "scripts/init-upstream-repo.sh",
+    "scripts/package-running-archive.sh"
+  ],
+  "notes": [
+    "Facade-first repository; bootstrap business logic remains delegated.",
+    "This manifest tracks in-repo working memory only and is not a runtime ledger."
+  ]
+}
