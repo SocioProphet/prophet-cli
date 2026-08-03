@@ -15,6 +15,22 @@
 ### Workflow
 - `prophet a2a run`
 
+### Diagnostics
+- `prophet doctor` — probe delegate engine readiness.
+- `prophet status` — façade boundary legibility: enumerates every top-level surface
+  as `real` / `delegating` / `scaffold`, names each delegate engine, and probes which
+  engines are installed on PATH. Read-only; the runtime twin of
+  [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+
+## Delegated-action receipts
+Pass `--receipt <path>` on any delegating command to write a small, command-scoped
+JSON receipt (schema `prophet-cli/receipt/v0`) recording command, delegate, status,
+args, timing, and any error. If `<path>` is a directory it receives a timestamped
+file; otherwise it is treated as a file path. Receipts are **façade-local** convenience
+artifacts — aligned conceptually with the estate ProofArtifact idea but **not** that
+spine and **not** a runtime ledger. A receipt-write failure never masks the delegated
+result.
+
 ## Hybrid overlay placeholders
 - `prophet ask`
 - `prophet plan`
