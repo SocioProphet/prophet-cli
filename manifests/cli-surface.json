@@ -1,0 +1,58 @@
+{
+  "apiVersion": "cli.socioprophet.dev/v1",
+  "kind": "ProphetCliSurfaceReconciliation",
+  "metadata": {
+    "name": "prophet-cli-surface",
+    "version": "0.1.0"
+  },
+  "policy": "docs/CLI_SURFACE_POLICY.md",
+  "note": "Reconciles the Prophet CLI & System Architecture spec command tree (nouns) onto the canonical verb model in CLI_SURFACE_POLICY.md. `verbs` mirrors the policy exactly; scripts/validate_cli_surface.py fails if the two drift either way. Every spec noun resolves to canonical verbs -- it must not define a competing command language -- and per the phase-1 policy an empty subtree must not be scaffolded: a noun is `adopted` only where a real delegate exists, otherwise `deferred` (follow-up, no verbs claimed).",
+  "verbs": {
+    "read": ["list", "show", "describe", "explain", "find", "search"],
+    "mutation": ["create", "update", "delete", "apply", "wait", "validate", "verify"],
+    "runtime": ["status", "logs", "start", "stop", "restart"],
+    "bootstrap": ["doctor", "login", "build", "fetch", "write", "info"]
+  },
+  "nouns": [
+    {
+      "noun": "build",
+      "status": "adopted",
+      "delegate": "prophet-cli build-recipes (build/recipes.yaml)",
+      "verbs": ["build", "validate"]
+    },
+    {
+      "noun": "vocab",
+      "status": "adopted",
+      "delegate": "ontogenesis",
+      "verbs": ["fetch", "validate"]
+    },
+    {
+      "noun": "search",
+      "status": "adopted",
+      "delegate": "holmes",
+      "verbs": ["search", "find"]
+    },
+    {
+      "noun": "agents",
+      "status": "adopted",
+      "delegate": "agent-registry",
+      "verbs": ["list"]
+    },
+    { "noun": "context", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "config", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "fs", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "graph", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "docker", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "conda", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "minio", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "rsync", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "kafka", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "work", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "gib", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "opencog", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "genesis", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "inception", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "twin", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] },
+    { "noun": "bridge", "status": "deferred", "followup": "prophet-cli#57 noun-namespace adoption", "verbs": [] }
+  ]
+}

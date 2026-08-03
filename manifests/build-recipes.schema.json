@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cli.socioprophet.dev/schemas/build-recipes.schema.json",
+  "title": "ProphetCliBuildRecipes",
+  "description": "3x3 build-recipe contract for `prophet build <tier>`. Each recipe is an ordered, acyclic chain of stages; every stage carries a required health gate so stage N+1 cannot start until stage N verifies. The validator (scripts/validate_build_recipes.py) reads the tier enum and required stage keys from this schema, so schema and validator cannot silently drift.",
+  "type": "object",
+  "required": ["apiVersion", "kind", "recipes"],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": { "const": "cli.socioprophet.dev/v1" },
+    "kind": { "const": "ProphetCliBuildRecipes" },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "recipes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/recipe" }
+    }
+  },
+  "$defs": {
+    "recipe": {
+      "type": "object",
+      "required": ["tier", "stages"],
+      "additionalProperties": false,
+      "properties": {
+        "tier": {
+          "description": "Evolution tier. The validator treats this enum as the single source of allowed tiers.",
+          "enum": ["local", "region", "macro"]
+        },
+        "description": { "type": "string" },
+        "stages": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/stage" }
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "required": ["id", "depends_on", "health"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "description": { "type": "string" },
+        "depends_on": {
+          "description": "Stage ids this stage waits on. Must reference only earlier stages in this recipe's declared order (no forward edges) and must include the immediately-preceding stage (no skip edges). The first stage must have an empty list.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "health": { "$ref": "#/$defs/health" }
+      }
+    },
+    "health": {
+      "description": "The stage health gate. A gate is real only when required==true and check is non-empty; anything weaker is treated as a missing gate and rejected.",
+      "type": "object",
+      "required": ["check", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": { "const": true }
+      }
+    }
+  }
+}

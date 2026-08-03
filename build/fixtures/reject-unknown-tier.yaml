@@ -1,0 +1,11 @@
+# REJECT (c): unknown tier (`galactic` is not in {local,region,macro}).
+apiVersion: cli.socioprophet.dev/v1
+kind: ProphetCliBuildRecipes
+recipes:
+  - tier: galactic
+    stages:
+      - id: genesis
+        depends_on: []
+        health:
+          check: prophet bootstrap verify genesis-attestation ./genesis.json
+          required: true

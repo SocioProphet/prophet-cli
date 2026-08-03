@@ -10,10 +10,12 @@ GOARCH ?= $(shell go env GOARCH 2>/dev/null || uname -m)
 DIST_NAME := $(BIN)_$(VERSION)_$(GOOS)_$(GOARCH)
 LDFLAGS := -X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)
 
-.PHONY: help fmt build test vet tidy validate verify dist release-dry-run clean
+PYTHON ?= python3
+
+.PHONY: help fmt build test vet tidy validate validate-manifests validate-recipes validate-surface verify dist release-dry-run clean
 
 help:
-	@echo "Targets: fmt build test vet tidy validate verify dist release-dry-run clean"
+	@echo "Targets: fmt build test vet tidy validate validate-manifests verify dist release-dry-run clean"
 
 fmt:
 	gofmt -w ./cmd ./internal
@@ -31,7 +33,15 @@ vet:
 tidy:
 	go mod tidy
 
-validate: build vet test
+validate-recipes:
+	$(PYTHON) scripts/validate_build_recipes.py --self-test
+
+validate-surface:
+	$(PYTHON) scripts/validate_cli_surface.py --self-test
+
+validate-manifests: validate-recipes validate-surface
+
+validate: build vet test validate-manifests
 	bin/$(BIN) --help >/tmp/prophet-help.txt
 	bin/$(BIN) version >/tmp/prophet-version.json
 	bin/$(BIN) doctor >/tmp/prophet-doctor.json

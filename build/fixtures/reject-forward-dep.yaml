@@ -1,0 +1,18 @@
+# REJECT (a): a stage depends on a later stage (forward edge), with no cycle.
+# `alpha` (stage 0) depends on `beta`, which is declared after it; `beta` depends
+# on nothing, so there is no cycle -- this isolates the forward/skip-edge tooth.
+apiVersion: cli.socioprophet.dev/v1
+kind: ProphetCliBuildRecipes
+recipes:
+  - tier: local
+    stages:
+      - id: alpha
+        depends_on: [beta]
+        health:
+          check: prophet bootstrap verify genesis-attestation ./genesis.json
+          required: true
+      - id: beta
+        depends_on: []
+        health:
+          check: prophet bootstrap verify proof-of-life ./inception.json
+          required: true
