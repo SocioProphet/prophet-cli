@@ -5,6 +5,7 @@ import "testing"
 func TestRootCommandHasExpectedTopLevelCommands(t *testing.T) {
 	root := NewRootCommand()
 	want := map[string]bool{
+		"status":       false,
 		"bootstrap":    false,
 		"vocab":        false,
 		"bindings":     false,

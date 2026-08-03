@@ -17,6 +17,7 @@ type GlobalFlags struct {
 	Quiet   bool
 	Debug   bool
 	NoPager bool
+	Receipt string
 }
 
 var flags GlobalFlags
@@ -36,11 +37,13 @@ func NewRootCommand() *cobra.Command {
 	root.PersistentFlags().BoolVarP(&flags.Quiet, "quiet", "q", false, "suppress non-essential output")
 	root.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "enable debug output")
 	root.PersistentFlags().BoolVar(&flags.NoPager, "no-pager", false, "disable pager")
+	root.PersistentFlags().StringVar(&flags.Receipt, "receipt", "", "write a façade-local JSON receipt for delegated actions (file path or directory)")
 	root.AddCommand(
 		newSuiteVersionCmd(),
 		newSuiteDoctorCmd(),
 		newSuiteSelfTestCmd(),
 		newSuiteEvidenceCmd(),
+		newStatusCmd(),
 		newBootstrapCmd(),
 		newVocabCmd(),
 		newBindingsCmd(),

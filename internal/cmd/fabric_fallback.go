@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -44,13 +45,16 @@ func delegateOrFallback(tool string, toolArgs []string, command string, fallback
 }
 
 func runDelegate(path string, tool string, args []string, command string) error {
+	started := time.Now()
 	run := exec.Command(path, args...)
 	var stdout, stderr bytes.Buffer
 	run.Stdout = &stdout
 	run.Stderr = &stderr
 	if err := run.Run(); err != nil {
+		emitReceipt(command, tool, "failed", args, started, err)
 		return emit(map[string]any{"command": command, "status": "failed", "delegate": tool, "stdout": stdout.String(), "stderr": stderr.String(), "error": err.Error()})
 	}
+	emitReceipt(command, tool, "ok", args, started, nil)
 	return emit(map[string]any{"command": command, "status": "ok", "delegate": tool, "stdout": stdout.String(), "stderr": stderr.String()})
 }
 
