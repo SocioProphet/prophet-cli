@@ -102,6 +102,9 @@ def reconcile(manifest: dict, policy_verbs: dict[str, list[str]]) -> None:
     for entry in nouns:
         noun = entry.get("noun")
         require(isinstance(noun, str) and noun, f"noun entry missing name: {entry}")
+        # A noun must resolve to exactly one entry; a duplicate makes command
+        # resolution ambiguous (and could smuggle a second, contradictory status).
+        require(noun not in seen, f"noun {noun}: declared more than once (ambiguous command resolution)")
         seen.add(noun)
         status = entry.get("status")
         require(status in {"adopted", "deferred"}, f"noun {noun}: status must be adopted|deferred, got {status!r}")
@@ -118,6 +121,13 @@ def reconcile(manifest: dict, policy_verbs: dict[str, list[str]]) -> None:
             require(nverbs, f"noun {noun}: adopted noun must resolve to >=1 canonical verb")
         else:  # deferred
             require(not nverbs, f"noun {noun}: deferred noun must not scaffold verbs (phase-1 policy)")
+            # A subtree is scaffolded by more than verbs: a real `delegate` wires
+            # an implementation for a noun that is supposed to be unbuilt. Phase-1
+            # policy is that a deferred noun carries no implementation at all.
+            require(
+                not entry.get("delegate"),
+                f"noun {noun}: deferred noun must not scaffold a delegate (phase-1 policy)",
+            )
             require(entry.get("followup"), f"noun {noun}: deferred noun must name a follow-up")
 
     # Whole spec command tree accounted for, both ways.
@@ -175,13 +185,26 @@ def self_test() -> int:
     m["nouns"][0] = dict(m["nouns"][0], verbs=["frobnicate"])
     expect_reject(m, "competing-command-language", "competing command language")
 
-    # (d) deferred noun scaffolds an empty subtree.
+    # (d) deferred noun scaffolds an empty subtree via verbs.
     m = copy.deepcopy(manifest)
     for i, n in enumerate(m["nouns"]):
         if n["status"] == "deferred":
             m["nouns"][i] = dict(n, verbs=["list"])
             break
     expect_reject(m, "scaffolded-deferred-noun", "must not scaffold")
+
+    # (e) deferred noun scaffolds an empty subtree via a real delegate (no verbs).
+    m = copy.deepcopy(manifest)
+    for i, n in enumerate(m["nouns"]):
+        if n["status"] == "deferred":
+            m["nouns"][i] = dict(n, delegate="prophet-cli real-subtree-impl")
+            break
+    expect_reject(m, "scaffolded-deferred-delegate", "must not scaffold a delegate")
+
+    # (f) the same noun is declared twice (ambiguous command resolution).
+    m = copy.deepcopy(manifest)
+    m["nouns"] = m["nouns"] + [dict(m["nouns"][0])]
+    expect_reject(m, "duplicate-noun", "declared more than once")
 
     if failures:
         for f in failures:

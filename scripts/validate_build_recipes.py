@@ -18,6 +18,7 @@ Usage:
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -54,6 +55,28 @@ def _stage_required_keys(schema: dict) -> set[str]:
     return set(schema["$defs"]["stage"]["required"])
 
 
+def _stage_id_pattern(schema: dict) -> "re.Pattern[str]":
+    return re.compile(schema["$defs"]["stage"]["properties"]["id"]["pattern"])
+
+
+def _allowed_keys(node: dict) -> set[str]:
+    """Keys the schema permits for a node whose additionalProperties is false.
+
+    Reading the allow-list from the schema keeps the validator from drifting
+    from `additionalProperties:false`; an unknown key (e.g. a stage-level
+    `skip:true` a runtime could honour to bypass the health gate) is rejected.
+    """
+    return set(node.get("properties", {}).keys())
+
+
+def _reject_unknown_keys(obj: dict, allowed: set[str], ctx: str) -> None:
+    extra = set(obj) - allowed
+    require(
+        not extra,
+        f"{ctx}: unknown keys not permitted by schema (additionalProperties:false): {sorted(extra)}",
+    )
+
+
 def _detect_cycle(nodes: list[str], edges: dict[str, list[str]]) -> list[str] | None:
     """Return a cycle path if the depends_on graph has one, else None."""
     WHITE, GRAY, BLACK = 0, 1, 2
@@ -84,15 +107,28 @@ def _detect_cycle(nodes: list[str], edges: dict[str, list[str]]) -> list[str] | 
     return None
 
 
-def _validate_recipe(recipe: dict, allowed_tiers: set[str], stage_keys: set[str]) -> None:
+def _validate_recipe(recipe: dict, schema: dict) -> None:
+    allowed_tiers = _allowed_tiers(schema)
+    stage_keys = _stage_required_keys(schema)
+    id_pattern = _stage_id_pattern(schema)
+    recipe_keys = _allowed_keys(schema["$defs"]["recipe"])
+    stage_all_keys = _allowed_keys(schema["$defs"]["stage"])
+    health_keys = _allowed_keys(schema["$defs"]["health"])
+
+    require(isinstance(recipe, dict), "each recipe must be a mapping")
     tier = recipe.get("tier")
     require(tier in allowed_tiers, f"unknown tier {tier!r}; allowed={sorted(allowed_tiers)}")
+    _reject_unknown_keys(recipe, recipe_keys, f"tier {tier} recipe")
 
     stages = recipe.get("stages")
     require(isinstance(stages, list) and stages, f"tier {tier}: stages must be a non-empty list")
 
     ids = [s.get("id") for s in stages]
     require(all(isinstance(i, str) and i for i in ids), f"tier {tier}: every stage needs a string id")
+    # Ids must match the schema pattern -- otherwise the validator would silently
+    # drift from the schema and admit ids (uppercase, whitespace) it forbids.
+    bad_ids = [i for i in ids if not id_pattern.fullmatch(i)]
+    require(not bad_ids, f"tier {tier}: stage ids violate schema pattern {id_pattern.pattern!r}: {bad_ids}")
     require(len(set(ids)) == len(ids), f"tier {tier}: duplicate stage ids in {ids}")
     index = {sid: i for i, sid in enumerate(ids)}
 
@@ -101,9 +137,11 @@ def _validate_recipe(recipe: dict, allowed_tiers: set[str], stage_keys: set[str]
         sid = stage["id"]
         missing = stage_keys - set(stage)
         require(not missing, f"tier {tier} stage {sid}: missing keys {sorted(missing)}")
+        _reject_unknown_keys(stage, stage_all_keys, f"tier {tier} stage {sid}")
         require(isinstance(stage["depends_on"], list), f"tier {tier} stage {sid}: depends_on must be a list")
         health = stage["health"]
         require(isinstance(health, dict), f"tier {tier} stage {sid}: health must be an object")
+        _reject_unknown_keys(health, health_keys, f"tier {tier} stage {sid} health")
         # A gate is real only when required==true AND check is non-empty.
         require(
             health.get("required") is True and isinstance(health.get("check"), str) and health["check"].strip(),
@@ -141,19 +179,24 @@ def _validate_recipe(recipe: dict, allowed_tiers: set[str], stage_keys: set[str]
 
 def validate(path: Path) -> None:
     schema = _load_schema()
-    allowed_tiers = _allowed_tiers(schema)
-    stage_keys = _stage_required_keys(schema)
 
     doc = yaml.safe_load(path.read_text(encoding="utf-8"))
     require(isinstance(doc, dict), "document root must be a mapping")
+    _reject_unknown_keys(doc, _allowed_keys(schema), "document root")
     require(doc.get("apiVersion") == "cli.socioprophet.dev/v1", "apiVersion mismatch")
     require(doc.get("kind") == "ProphetCliBuildRecipes", "kind mismatch")
     recipes = doc.get("recipes")
     require(isinstance(recipes, list) and recipes, "recipes must be a non-empty list")
 
+    # A tier resolves `prophet build <tier>` to exactly one recipe; two recipes
+    # sharing a tier make resolution ambiguous, so a duplicate tier is rejected.
+    seen_tiers: list = []
     for recipe in recipes:
         require(isinstance(recipe, dict), "each recipe must be a mapping")
-        _validate_recipe(recipe, allowed_tiers, stage_keys)
+        _validate_recipe(recipe, schema)
+        seen_tiers.append(recipe.get("tier"))
+    dupes = sorted({t for t in seen_tiers if seen_tiers.count(t) > 1})
+    require(not dupes, f"duplicate tier -- each tier must resolve to exactly one recipe: {dupes}")
 
 
 # --- self-test: prove the teeth fire both ways --------------------------------
@@ -163,6 +206,8 @@ REJECT_FIXTURES = {
     "reject-missing-gate.yaml": "missing health gate",
     "reject-unknown-tier.yaml": "unknown tier",
     "reject-cycle.yaml": "cycle in depends_on",
+    "reject-duplicate-tier.yaml": "duplicate tier",
+    "reject-unknown-key.yaml": "unknown keys not permitted",
 }
 
 

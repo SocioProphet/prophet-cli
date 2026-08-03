@@ -1,0 +1,26 @@
+# REJECT (e): two recipes share a tier, so `prophet build local` cannot resolve
+# to exactly one recipe. Each recipe is individually well-formed (valid chain +
+# real gates); the ambiguity is the violation -- a shadow recipe must not be able
+# to hide behind a duplicate tier.
+apiVersion: cli.socioprophet.dev/v1
+kind: ProphetCliBuildRecipes
+recipes:
+  - tier: local
+    stages:
+      - id: genesis
+        depends_on: []
+        health:
+          check: prophet bootstrap verify genesis-attestation ./genesis.json
+          required: true
+      - id: inception
+        depends_on: [genesis]
+        health:
+          check: prophet bootstrap verify proof-of-life ./inception.json
+          required: true
+  - tier: local
+    stages:
+      - id: noop
+        depends_on: []
+        health:
+          check: "true"
+          required: true
