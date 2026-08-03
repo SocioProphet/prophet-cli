@@ -43,8 +43,11 @@ def _delegate(ep, args: list[str]):
             sys.exit(1)
     elif ep.kind == "cli":
         cmd = [ep.location, *args]
-    else:  # repo — use the repo's cli entrypoint
-        cmd = ["python3", "-m", "cli", *args] if False else ["atlas", *args]
+    else:  # repo checkout — run its Atlas CLI module from the repo root
+        if shutil.which("atlas"):
+            cmd = ["atlas", *args]
+        else:
+            cmd = ["python3", "-m", "cli.atlas", *args]  # tritfabric's cli/ package
     console.print(f"[dim]  {' '.join(cmd)}[/dim]")
     r = subprocess.run(cmd, cwd=(ep.location if ep.kind == "repo" else None))
     if r.returncode != 0:
