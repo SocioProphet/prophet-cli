@@ -75,10 +75,21 @@ def build_parser() -> argparse.ArgumentParser:
     _add_sp_run_delegate(sub, "agentplane", "Delegate AgentPlane governed-runner commands")
     _add_sp_run_delegate(sub, "governed-runner", "Delegate governed-runner commands")
 
+    doctor = sub.add_parser("doctor", help="Validate the toolchain config (fail-closed) / emit the native rc")
+    doctor.add_argument("args", nargs=argparse.REMAINDER, help="[--json] [--quiet] [--emit posix|powershell] [--config PATH]")
+
+    config_p = sub.add_parser("config", help="Manage the prophet config (path|show|init)")
+    config_p.add_argument("args", nargs=argparse.REMAINDER, help="path | show | init")
+
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
+    raw = list(sys.argv[1:] if argv is None else argv)
+    if raw and raw[0] in {"doctor", "config"}:
+        from prophet_cli import config as _config
+        return (_config.run_doctor if raw[0] == "doctor" else _config.run_config)(raw[1:])
+
     parser = build_parser()
     args = parser.parse_args(argv)
 
