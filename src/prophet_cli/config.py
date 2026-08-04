@@ -101,20 +101,26 @@ def doctor(cfg: dict, *, platform: str | None = None) -> list[dict]:
     for name, ref in _secret_refs(cfg).items():
         if platform == "windows":
             cred = (ref or {}).get("cred") if isinstance(ref, dict) else None
+            # same rule: name the presence of a credential reference, not the reference itself.
             add("ok" if cred else "warn", f"secret:{name}",
-                f"cred:{cred} (DPAPI/Credential Manager)" if cred else "no windows credential ref")
+                "credential reference present (DPAPI/Credential Manager)" if cred
+                else "no windows credential ref")
             continue
         fileref = (ref or {}).get("file") if isinstance(ref, dict) else ref
         if not fileref:
             add("warn", f"secret:{name}", "no file reference on this platform")
             continue
         fp = Path(_expand_posix(str(fileref)))
+        # NEVER echo the resolved path. This is a reporter, and its output lands in terminals, CI
+        # logs and pasted transcripts; the location of a signing key is attack surface even though
+        # it is not the key itself. Report the name and the condition — the operator has the config.
         if not fp.exists():
-            add("error", f"secret:{name}", f"referenced secret file missing: {fp}")
+            add("error", f"secret:{name}", "referenced secret file is missing")
         else:
             mode = stat.S_IMODE(fp.stat().st_mode)
             add("ok" if mode == 0o600 else "error", f"secret:{name}",
-                f"{fp} (0600)" if mode == 0o600 else f"{fp} is {oct(mode)} — must be 0600 (secrets are not world/group readable)")
+                "present, 0600" if mode == 0o600
+                else f"present but {oct(mode)} — must be 0600 (secrets are not world/group readable)")
 
     import shutil
     for cli in (cfg.get("require", {}).get("clis") or ["prophet", "sourceosctl"]):
@@ -261,6 +267,9 @@ def run_doctor(argv: list[str]) -> int:
         print(f"prophet doctor: {e}", file=sys.stderr)
         return 1
     if a.emit:
+        # Unlike `doctor`, this is a GENERATOR: stdout here IS the rc file, and the rc file must
+        # carry the secret *reference* (a path or a cred name) for the shell to resolve at load.
+        # It still carries no secret VALUE. Redirect it to a file; do not pipe it into a log.
         sys.stdout.write(emit(cfg, target=a.emit))
         return 0
     return _print_doctor(doctor(cfg), as_json=a.json, quiet=a.quiet)

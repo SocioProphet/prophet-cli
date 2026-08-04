@@ -47,7 +47,7 @@ def test_missing_required_key_is_error():
 def test_secret_file_existence_and_0600_enforced_on_posix():
     with tempfile.TemporaryDirectory() as td:
         good = Path(td) / "k.key"; good.write_text("x"); os.chmod(good, 0o600)
-        bad = Path(td) / "b.key"; bad.write_text("x"); os.chmod(bad, 0o644)
+        bad = Path(td) / "b.key"; bad.write_text("x"); os.chmod(bad, 0o640)  # group-readable: fails 0600, not world-readable
         c = _cfg(secrets={
             "good": {"file": str(good)},
             "loose": {"file": str(bad)},
@@ -55,7 +55,7 @@ def test_secret_file_existence_and_0600_enforced_on_posix():
         })
         lv = _levels(config.doctor(c, platform="posix"))
         assert lv["secret:good"] == "ok"
-        assert lv["secret:loose"] == "error"   # 0644 → refused
+        assert lv["secret:loose"] == "error"   # 0640 → refused (anything but 0600)
         assert lv["secret:gone"] == "error"    # missing → refused
 
 
@@ -79,3 +79,30 @@ def test_emit_powershell_generates_psm1():
     assert '$env:SOURCEOS_KUBE_CONTEXT = "sourceos-box"' in out
     assert '$env:SOURCEOS_SIGNING_KEY_REF = "cred:sourceos-signing"' in out
     assert "$env:APPDATA" in out  # native Windows idiom, not XDG
+
+
+def test_doctor_never_echoes_a_secret_path():
+    """CodeQL flagged this as clear-text logging of sensitive information, and it was right.
+
+    `doctor` is a REPORTER: its output goes to terminals, CI logs and pasted transcripts. The path
+    of a signing key is attack surface even though it is not the key. The estate rule is that
+    scanners do not echo their matches, and this is the same rule.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        secret = Path(td) / "sovereign-root.key"
+        secret.write_text("x")
+        os.chmod(secret, 0o640)                      # wrong mode, so it is reported at all
+        results = config.doctor(_cfg(secrets={"signing_key": {"file": str(secret)}}), platform="posix")
+        for r in results:
+            assert td not in r["message"], f"leaked the directory in {r['name']}"
+            assert "sovereign-root" not in r["message"], f"leaked the filename in {r['name']}"
+        msg = _levels(results)["secret:signing_key"]
+        assert msg == "error", "the wrong mode must still be refused — redaction is not leniency"
+
+
+def test_emit_still_carries_the_reference_because_the_rc_needs_it():
+    """The counterpart: `emit` is a GENERATOR, not a reporter. Its stdout IS the rc file, which must
+    carry the reference for the shell to resolve at load. Redacting there would break the feature."""
+    out = config.emit(_cfg(secrets={"signing_key": {"file": "${NOETICA_HOME}/sovereign-root.key"}}),
+                      target="posix")
+    assert 'SOURCEOS_SIGNING_KEY_FILE="${NOETICA_HOME}/sovereign-root.key"' in out
