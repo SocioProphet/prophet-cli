@@ -1,0 +1,16 @@
+# REJECT (d): a cycle in depends_on (genesis <-> inception).
+apiVersion: cli.socioprophet.dev/v1
+kind: ProphetCliBuildRecipes
+recipes:
+  - tier: local
+    stages:
+      - id: genesis
+        depends_on: [inception]
+        health:
+          check: prophet bootstrap verify genesis-attestation ./genesis.json
+          required: true
+      - id: inception
+        depends_on: [genesis]
+        health:
+          check: prophet bootstrap verify proof-of-life ./inception.json
+          required: true

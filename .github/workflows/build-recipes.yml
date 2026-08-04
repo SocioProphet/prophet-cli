@@ -1,0 +1,25 @@
+name: build-recipes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install pyyaml
+      - name: Validate 3x3 build-recipe contract (DAG + health-gate teeth)
+        run: python scripts/validate_build_recipes.py --self-test
+      - name: Reconcile CLI surface with CLI_SURFACE_POLICY.md
+        run: python scripts/validate_cli_surface.py --self-test

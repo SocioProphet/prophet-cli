@@ -1,0 +1,90 @@
+# Prophet CLI 3x3 build-recipe contract.
+#
+# Contract for `prophet build local|region|macro`. Each recipe is an ordered,
+# acyclic chain of three stages. Every stage declares a required health gate:
+# stage N+1 cannot start until stage N's gate verifies. Ordering teeth
+# (no forward edges, no skip edges, no cycles) and gate presence are enforced
+# by scripts/validate_build_recipes.py against manifests/build-recipes.schema.json.
+#
+# Schema:  manifests/build-recipes.schema.json
+# Verify:  python3 scripts/validate_build_recipes.py --self-test
+#
+# The commitments themselves (Genesis/Inception/Twin, region/macro planes) are
+# already-real elsewhere (sourceos-spec, source-os/runtime/quorumd, estate
+# gitops-promote). This file is the façade-local ordering + gate contract only;
+# it delegates the actual work to those engines and does not reimplement them.
+apiVersion: cli.socioprophet.dev/v1
+kind: ProphetCliBuildRecipes
+metadata:
+  name: prophet-build-recipes
+  version: "0.1.0"
+
+recipes:
+  # local: genesis -> inception -> twin-bridge
+  - tier: local
+    description: Single-node evolution order for a sovereign local install.
+    stages:
+      - id: genesis
+        description: Mint the GenesisSeed and GenesisAttestationDocument.
+        depends_on: []
+        health:
+          check: prophet bootstrap verify genesis-attestation ./genesis.json
+          required: true
+      - id: inception
+        description: Establish ProofOfLife under the IdentityQuorumPolicy.
+        depends_on: [genesis]
+        health:
+          check: prophet bootstrap verify proof-of-life ./inception.json
+          required: true
+      - id: twin-bridge
+        description: Bind the local twin bridge to the attested identity.
+        depends_on: [inception]
+        health:
+          check: prophet status --query twin-bridge
+          required: true
+
+  # region: security/storage -> bus/HOPE -> work/agents
+  - tier: region
+    description: Regional plane evolution order over the local foundation.
+    stages:
+      - id: security-storage
+        description: Stand up the security and storage substrate (SAPIEN/ROCKZDB).
+        depends_on: []
+        health:
+          check: prophet spine validate --repo security-storage
+          required: true
+      - id: bus-hope
+        description: Bring up the event bus and HOPE plane.
+        depends_on: [security-storage]
+        health:
+          check: prophet spine validate --repo bus-hope
+          required: true
+      - id: work-agents
+        description: Enable regional work surfaces and agent runtime.
+        depends_on: [bus-hope]
+        health:
+          check: prophet agent registry list
+          required: true
+
+  # macro: federated-twin -> policy/replication -> macro-agents/search
+  - tier: macro
+    description: Macro (federated) plane evolution order over the regional plane.
+    stages:
+      - id: federated-twin
+        description: Federate twins across regions.
+        depends_on: []
+        health:
+          check: prophet status --query federated-twin
+          required: true
+      - id: policy-replication
+        description: Replicate policy and identity quorum across the federation.
+        depends_on: [federated-twin]
+        health:
+          check: prophet spine validate --repo policy-replication
+          required: true
+      - id: macro-agents-search
+        description: Enable macro-scale agents and federated search.
+        depends_on: [policy-replication]
+        health:
+          check: prophet holmes search "readiness probe"
+          required: true

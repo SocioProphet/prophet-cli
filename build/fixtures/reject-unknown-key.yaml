@@ -1,0 +1,21 @@
+# REJECT (f): a stage carries an unknown key (`skip: true`) that the schema
+# forbids (additionalProperties:false). The health gate itself is well-formed, so
+# the stage looks compliant -- but an out-of-band `skip` field a runtime could
+# honour would bypass the very gate the contract exists to enforce. The validator
+# must reject any key the schema does not permit.
+apiVersion: cli.socioprophet.dev/v1
+kind: ProphetCliBuildRecipes
+recipes:
+  - tier: local
+    stages:
+      - id: genesis
+        depends_on: []
+        skip: true
+        health:
+          check: prophet bootstrap verify genesis-attestation ./genesis.json
+          required: true
+      - id: inception
+        depends_on: [genesis]
+        health:
+          check: prophet bootstrap verify proof-of-life ./inception.json
+          required: true
