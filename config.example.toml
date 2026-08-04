@@ -1,0 +1,37 @@
+# config.toml — the SourceOS / Prophet toolchain config. ONE source of truth; the native rc files
+# (.prophetrc on POSIX, prophet.psm1 on Windows) are GENERATED from this by `prophet doctor --emit`.
+# CONFIG only — secret VALUES never live here; secrets are references.
+#
+# Roll out with:   prophet config init   # writes ~/.config/prophet/config.toml (or %APPDATA%\prophet)
+#                  $EDITOR $(prophet config path)
+#                  prophet doctor        # fail-closed: refuses a rollout that would not work as advertised
+#                  prophet doctor --emit posix > ~/.prophetrc          # POSIX (SourceOS/macOS)
+#                  prophet doctor --emit powershell > prophet.psm1     # Windows
+schema = "prophet.config/v0"
+
+[profile]
+name = "box"        # box | twin | cloud
+endpoint = "box"    # box = local/LAN, twin = always-on cloud rendezvous
+
+[compute]
+kube_context = "sourceos-box"     # MUST be your sovereign context — never the ambient prod cluster
+kube_namespace = "you-default"
+# slurm_login = "slurm.local"     # opt-in HPC
+
+[hellgraph]
+http_port = 8787
+superpeer = false                 # p2p federation opt-in
+
+[identity]
+tenant = "you"
+user = "dev"
+sensitivity = "normal"            # normal | sensitive
+
+[secrets]
+# references, never values. POSIX resolves `file` (checked for existence + 0600); Windows uses `cred`
+# (DPAPI / Credential Manager). Most already live in the .noetica state home.
+signing_key   = { file = "${NOETICA_HOME}/sovereign-root.key", cred = "sourceos-signing" }
+anthropic_key = { file = "${NOETICA_HOME}/anthropic.key",      cred = "anthropic" }
+
+[require]
+clis = ["prophet", "sourceosctl"]
