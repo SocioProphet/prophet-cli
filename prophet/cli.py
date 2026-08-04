@@ -4,6 +4,7 @@ from rich.console import Console
 from prophet.commands.infra import infra
 from prophet.commands.workspace import workspace
 from prophet.commands.kustomize import kustomize_cmd
+from prophet.commands.scm import scm
 
 console = Console()
 
@@ -16,3 +17,4 @@ def main():
 main.add_command(infra)
 main.add_command(workspace)
 main.add_command(kustomize_cmd, name="kustomize")
+main.add_command(scm)
