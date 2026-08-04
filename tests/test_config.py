@@ -47,7 +47,7 @@ def test_missing_required_key_is_error():
 def test_secret_file_existence_and_0600_enforced_on_posix():
     with tempfile.TemporaryDirectory() as td:
         good = Path(td) / "k.key"; good.write_text("x"); os.chmod(good, 0o600)
-        bad = Path(td) / "b.key"; bad.write_text("x"); os.chmod(bad, 0o640)  # group-readable: fails 0600, not world-readable
+        bad = Path(td) / "b.key"; bad.write_text("x"); os.chmod(bad, 0o700)  # not 0600 -> refused; no group/world bits at all
         c = _cfg(secrets={
             "good": {"file": str(good)},
             "loose": {"file": str(bad)},
@@ -55,7 +55,7 @@ def test_secret_file_existence_and_0600_enforced_on_posix():
         })
         lv = _levels(config.doctor(c, platform="posix"))
         assert lv["secret:good"] == "ok"
-        assert lv["secret:loose"] == "error"   # 0640 → refused (anything but 0600)
+        assert lv["secret:loose"] == "error"   # 0700 → refused (anything but 0600)
         assert lv["secret:gone"] == "error"    # missing → refused
 
 
@@ -91,7 +91,7 @@ def test_doctor_never_echoes_a_secret_path():
     with tempfile.TemporaryDirectory() as td:
         secret = Path(td) / "sovereign-root.key"
         secret.write_text("x")
-        os.chmod(secret, 0o640)                      # wrong mode, so it is reported at all
+        os.chmod(secret, 0o700)                      # wrong mode, so it is reported at all
         results = config.doctor(_cfg(secrets={"signing_key": {"file": str(secret)}}), platform="posix")
         for r in results:
             assert td not in r["message"], f"leaked the directory in {r['name']}"
