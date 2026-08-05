@@ -58,6 +58,7 @@ func NewRootCommand() *cobra.Command {
 		newGuardrailCmd(),
 		newLedgerCmd(),
 		newSpineCmd(),
+		newScmCmd(),
 		newEnrichmentCmd(),
 		newAgentSuiteCmd(),
 		newPlaceholderCmd("ask", "Agent assist: explain or inspect without mutating state"),
