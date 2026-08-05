@@ -5,3 +5,10 @@
 *.out
 coverage.out
 .DS_Store
+
+# Build artefacts. Four .pyc files were tracked before this — three of them
+# committed by me in #62 via `git add -A` in a worktree, which is exactly the
+# accident an ignore rule exists to make impossible.
+__pycache__/
+*.py[cod]
+*$py.class
