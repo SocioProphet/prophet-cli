@@ -180,10 +180,16 @@ def _print_doctor(results: list[dict], *, as_json: bool, quiet: bool) -> int:
     errors = [r for r in results if r["level"] == "error"]
     if as_json:
         import json
+        # codeql[py/clear-text-logging-sensitive-data] -- the tainted value CodeQL follows is the
+        # secret's NAME (a key of the `secrets` mapping), never its value or its path. See below.
         print(json.dumps({"ok": not errors, "results": results}, indent=2))
     elif not quiet:
         sym = {"ok": "✓", "warn": "!", "error": "✗"}
         for r in results:
+            # codeql[py/clear-text-logging-sensitive-data] -- the flow is the secret's NAME, not its
+            # value and not its path. A doctor that reports "a secret failed" without saying WHICH
+            # is useless, so the name must be emitted. `test_doctor_never_echoes_a_secret_path`
+            # pins that no path or filename ever reaches this output.
             print(f"  {sym.get(r['level'],'?')} {r['name']}: {r['message']}", file=sys.stderr)
         print(("prophet doctor: OK" if not errors else f"prophet doctor: {len(errors)} error(s) — rollout would NOT work as advertised"),
               file=sys.stderr)
@@ -270,6 +276,9 @@ def run_doctor(argv: list[str]) -> int:
         # Unlike `doctor`, this is a GENERATOR: stdout here IS the rc file, and the rc file must
         # carry the secret *reference* (a path or a cred name) for the shell to resolve at load.
         # It still carries no secret VALUE. Redirect it to a file; do not pipe it into a log.
+        # codeql[py/clear-text-logging-sensitive-data] -- deliberate: stdout here IS the rc file,
+        # which must carry the secret REFERENCE (path or cred name) for the shell to resolve at
+        # load. It carries no secret VALUE. Redirect to a file; do not pipe into a log.
         sys.stdout.write(emit(cfg, target=a.emit))
         return 0
     return _print_doctor(doctor(cfg), as_json=a.json, quiet=a.quiet)
